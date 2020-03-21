@@ -3,16 +3,25 @@ import redis
 import random
 from time import sleep
 import sys
+import requests
+from lxml import etree
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+'''
+_author=kirte
+_date=2020.3.16
+'''
 
 proc_now=0
 proc_all=20
 process_num=20
-sep=0.1#刷新速度
+sep=1.7#刷新速度
 stop=1
 main_url='http://bbs.tjdige.com/'
 url_1=[]
 url_2=[]
-thread_num=1
+thread_num=2
 func_1_next=1
 func_1_search=1
 func_2_next=1
@@ -50,11 +59,6 @@ def pipe(host='127.0.0.1',db='0',pw=''):
     proxy={'http' : pro}
     return proxy
 
-import requests
-from lxml import etree
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
 def spyder(url,pro='off',down='off'):
     while True:
         try:
@@ -76,6 +80,7 @@ def spyder(url,pro='off',down='off'):
         else:
             source_encoding = resp.apparent_encoding or resp.encoding
             if down == 'off' :
+                insert('[gethtml:'+url+']')
                 return etree.HTML(resp.content.decode(source_encoding, errors="ignore"))
                 break
             elif down == 'on' :
@@ -126,24 +131,25 @@ def cut(text,num):#将列表text分为num份
 def t_func(id,url_list):
 	global src,process,proc_now
 	src_temp=[]
+	insert('[线程'+str(id)+'运行]')
 	for each in url_list:
+		next_page=each
+		while next_page:
+			html=spyder(next_page)
+			src_temp.append(func_2_search(html,next_page))
+			next_page=func_2_next(html,next_page)
 		insert(each)
 		l.acquire()
 		proc_now=proc_now+1
 		l.release()
-		next_page=each
-		while next_page:
-			html=spyder(next_page)
-			src_temp.append(func_2_search(html))
-			next_page=func_2_next(html)
-	l.acquire()
+	l.acquire()		
 	src=src+src_temp
 	l.release()
 	
 def multi_thread(func,args,num):
 		t=[]
 		args=cut(args,num)
-		for each in range(num):
+		for each in range(len(args)):
 			temp=Thread(target=func,args=(each,args[each]))
 			temp.start()
 			t.append(temp)
@@ -166,12 +172,12 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
 	for i in range(num+1):
 		insert(url_now)
 		html=spyder(url_now)
-		a=func_1_search(html)
+		a=func_1_search(html,url_now)
 		for each in a:
 			f.write(each+'\n')
 		url_2=url_2+a
 		url_1.append(url_now)
-		url_now=func_1_next(url_now)
+		url_now=func_1_next(None,url_now)
 	f.close()
 	insert('爬至'+url_now)
 	insert('共'+str(len(url_2))+'部')
@@ -188,7 +194,11 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
 		insert('保存完毕')
 		quit()
 		
-		
+
+if __name__ == '__main__':
+	print('这是一个模块，你不能这样打开')
+	input('输入回车来结束') 
+
 
 			
 
