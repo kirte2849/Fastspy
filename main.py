@@ -1,6 +1,6 @@
 from fastspy import spyder,insert
 import fastspy as spy
-
+from lxml import etree
 '''
 _author=kirte
 _date=2020.3.16
@@ -12,10 +12,21 @@ def func_1_search
 def func_2_next
 '''
 
+def noerror(func):
+    def zsq(*args,**kwargs):
+        try:
+            return func(*args,**kwargs)
+        except Exception as e:
+            print('\n\n\n\n\n\n一个错误出现在函数'+func.__name__+'\n错误类型:['+str(e)+']')
+            print('我们正在尽全力进行挽回...\n\n\n\n\n')
+            return None
+    return zsq
+
 #@@@@@@@你只需要修改这里@@@@@@@@#
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 def func_2_search(html,url):
 	#在这里返回url_2的资源字典
+	html=etree.HTML(html)
 	r=[]
 	try:
 		img=html.xpath('//img [@alt]')
@@ -27,22 +38,28 @@ def func_2_search(html,url):
 		insert(repr(e))
 		return {'title':'null','img_src':'null'}
 		
-def func_1_next(html,url):
+@noerror
+def func_1_next(html,url):#这里的html为none
 	#在这里返回url_1的下一页url
 	a=url.split('/')[-1].split('.')[0]
 	r='https://qqc962.com/page/'+str(int(a)+1)+'.html'
 	return r
 	
+@noerror
 def func_1_search(html,url):
+	html=etree.HTML(html)
 	r=[]
+	a=1/0
 	a=html.xpath('//a [@class="thumbnail"]')[:10]
 	for each in a:
 		r.append(spy.main_url+each.attrib['href'][1:])
 	#在这里返回url_2的列表
 	return r
 	
+@noerror
 def func_2_next(html,url):
 	#在这里返回url_2的下一页
+	html=etree.HTML(html)
 	try:
 		a=html.xpath('//div [@class="pagination pagination-multi"]')[0][0][-1][0].attrib['href']
 		return url[:url.rfind('/')]+'/'+a

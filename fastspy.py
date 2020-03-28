@@ -59,7 +59,7 @@ def pipe(host='127.0.0.1',db='0',pw=''):
     proxy={'http' : pro}
     return proxy
 
-def spyder(url,pro='off',down='off'):
+def spyder(url,pro='off',down='off',meta=False):
     while True:
         try:
             if pro == 'off' :
@@ -81,12 +81,10 @@ def spyder(url,pro='off',down='off'):
             source_encoding = resp.apparent_encoding or resp.encoding
             if down == 'off' :
                 insert('[gethtml:'+url+']')
-                return etree.HTML(resp.content.decode(source_encoding, errors="ignore"))
-                break
+                return resp.content.decode(source_encoding, errors="ignore")
             elif down == 'on' :
                 return resp.content
-                break
-                
+         
 def down(url,name='null',mod='txt'):
     datas=spyder(url,'off','on')
     if name == 'null' :
@@ -138,7 +136,7 @@ def t_func(id,url_list):
 			html=spyder(next_page)
 			src_temp.append(func_2_search(html,next_page))
 			next_page=func_2_next(html,next_page)
-		insert(each)
+		insert('完成爬行:'+each)
 		l.acquire()
 		proc_now=proc_now+1
 		l.release()
