@@ -31,6 +31,16 @@ log_file='url.log'
 l=Lock()
 src=[]
 
+def noerror(func):
+    def zsq(*args,**kwargs):
+        try:
+            return func(*args,**kwargs)
+        except Exception as e:
+            print('\033[37;41m\n\n\n\n\n\n一个错误出现在函数'+func.__name__+'\n错误类型:['+str(e)+']')
+            print('我们正在尽全力进行挽回...\n\n\n\n\n\033[0m')
+            return None
+    return zsq
+
 
 def draw(process,num):#绘制进度条，当前进度process，总进度num
     print(">>进度:",end="")
@@ -80,7 +90,7 @@ def spyder(url,pro='off',down='off',meta=False):
         else:
             source_encoding = resp.apparent_encoding or resp.encoding
             if down == 'off' :
-                insert('[gethtml:'+url+']')
+                insert('\033[1;36m[gethtml:'+url+']\033[0m')
                 return resp.content.decode(source_encoding, errors="ignore")
             elif down == 'on' :
                 return resp.content
@@ -114,7 +124,7 @@ def cd(name):
         
 def cut(text,num):#将列表text分为num份
 	if len(text)<num:
-		insert('['+str(num)+' is too big.]')
+		insert('\033[1;33m['+str(num)+' is too big.]\033[0m')
 	if len(text)%num!=0:
 		t=len(text)//num+1
 	else:
@@ -159,16 +169,16 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
 	i=0
 	url_now=url_start
 	html=''
-	print('主页:'+main_url)
+	print('\033[1;32m主页:'+main_url)
 	print('开始url:'+url_start)
 	print('线程数:'+str(thread_num))
 	print('url_2输出文件:'+log_file)
 	print('输出结果文件:'+out_file)
-	print('第一阶段')
+	insert('                第一阶段\033[0m')
 	start()
 	f=open(log_file,'a',encoding='utf-8')
 	for i in range(num+1):
-		insert(url_now)
+		insert('正在寻找url:'+url_now)
 		html=spyder(url_now)
 		a=func_1_search(html,url_now)
 		for each in a:
@@ -177,18 +187,18 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
 		url_1.append(url_now)
 		url_now=func_1_next(None,url_now)
 	f.close()
-	insert('爬至'+url_now)
+	insert('\033[1;32m爬至'+url_now)
 	insert('共'+str(len(url_2))+'部')
 	proc_all=len(url_2)
-	insert('第二阶段')
+	insert('                第二阶段')
 	multi_thread(t_func,args=url_2,num=thread_num)
-	insert('正在保存…')
+	insert('正在保存…\033[1;32m')
 	with open(out_file,'w',encoding='utf-8') as f:
 		for each in src:
 			try:
 				f.write(str(each)+'\n')
 			except Exception as e:
-				insert(str(e))
+				insert('\033[37;41m'+str(e)+'\033[0m')
 		insert('保存完毕')
 		quit()
 		

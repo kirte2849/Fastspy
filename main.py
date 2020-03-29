@@ -1,4 +1,4 @@
-from fastspy import spyder,insert
+from fastspy import spyder,insert,noerror
 import fastspy as spy
 from lxml import etree
 '''
@@ -12,15 +12,6 @@ def func_1_search
 def func_2_next
 '''
 
-def noerror(func):
-    def zsq(*args,**kwargs):
-        try:
-            return func(*args,**kwargs)
-        except Exception as e:
-            print('\n\n\n\n\n\n一个错误出现在函数'+func.__name__+'\n错误类型:['+str(e)+']')
-            print('我们正在尽全力进行挽回...\n\n\n\n\n')
-            return None
-    return zsq
 
 #@@@@@@@你只需要修改这里@@@@@@@@#
 #@@@@@@@@@@@@@@@@@@@@@@@@#
@@ -35,7 +26,7 @@ def func_2_search(html,url):
 		title=html.xpath('//title')[0].text
 		return {'title':title,'img_src':r}
 	except Exception as e:
-		insert(repr(e))
+		insert('\033[37;41m'+str(e)+'\033[0m')
 		return {'title':'null','img_src':'null'}
 		
 @noerror
@@ -49,7 +40,6 @@ def func_1_next(html,url):#这里的html为none
 def func_1_search(html,url):
 	html=etree.HTML(html)
 	r=[]
-	a=1/0
 	a=html.xpath('//a [@class="thumbnail"]')[:10]
 	for each in a:
 		r.append(spy.main_url+each.attrib['href'][1:])
