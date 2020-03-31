@@ -30,6 +30,7 @@ out_file='out.txt'
 log_file='url.log'
 l=Lock()
 src=[]
+header=None
 
 def noerror(func):
     def zsq(*args,**kwargs):
@@ -73,10 +74,16 @@ def spyder(url,pro='off',down='off',meta=False):
     while True:
         try:
             if pro == 'off' :
-                resp=requests.get(url=url,timeout=10, verify=False)
+                if header:
+                    resp=requests.get(url=url,timeout=10, verify=False,headers=header)
+                else:
+                    resp=requests.get(url=url,timeout=10, verify=False)
             elif pro == 'on' :
                 proxy=pipe()
-                resp=requests.get(url=url,proxies=proxy,timeout=10, verify=False)
+                if header:
+                    resp=requests.get(url=url,proxies=proxy,timeout=5,headers=header,verify=False)
+                else:
+                    resp=requests.get(url=url,proxies=proxy,timeout=5, verify=False)
                 print('使用代理成功' + str(proxy))
             if resp.status_code != 200 :
                 print('[错误的返还码:' + resp.status_code + '!]')
