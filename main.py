@@ -1,6 +1,7 @@
 from fastspy import spyder,insert,noerror
 import fastspy as spy
 from lxml import etree
+import re
 '''
 _author=kirte
 _date=2020.3.16
@@ -16,61 +17,66 @@ def func_2_next
 #@@@@@@@你只需要修改这里@@@@@@@@#
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 def func_2_search(html,url):
-	#在这里返回url_2的资源字典
-	html=etree.HTML(html)
-	r=[]
-	try:
-		img=html.xpath('//img [@alt]')
-		for each in img:
-			r.append(each.attrib['src'])
-		title=html.xpath('//title')[0].text
-		return {'title':title,'img_src':r}
-	except Exception as e:
-		insert('\033[37;41m'+str(e)+'\033[0m')
-		return {'title':'null','img_src':'null'}
-		
+    #在这里返回url_2的资源字典
+    r=[]
+    try:
+        payload=r'''<p><img src="https:.+?"'''
+        result=re.findall(payload,html)
+        title=re.search(r"<title>.*</title>",html).group(0)
+        r=[]
+        for each in result:
+            r.append(each.replace(r'"',"")[12:])
+        return {'title':title,'img_src':r}
+    except Exception as e:
+        insert('\033[37;41m'+str(e)+'\033[0m')
+        return {'title':'null','img_src':'null'}
+        
 @noerror
 def func_1_next(html,url):#这里的html为none
-	#在这里返回url_1的下一页url
-	a=url.split('/')[-1].split('.')[0]
-	r='https://qqc962.com/page/'+str(int(a)+1)+'.html'
-	return r
-	
+    #在这里返回url_1的下一页url
+    a=url.split('/')[-1].split('.')[0]
+    r='https://qqc962.com/page/'+str(int(a)+1)+'.html'
+    return r
+    
 @noerror
 def func_1_search(html,url):
-	html=etree.HTML(html)
-	r=[]
-	a=html.xpath('//a [@class="thumbnail"]')[:10]
-	for each in a:
-		r.append(spy.main_url+each.attrib['href'][1:])
-	#在这里返回url_2的列表
-	return r
-	
+    r=re.findall(r'''<h2><a target="_blank" href=".*?\.html''',html)
+    a=[]
+    for each in r:
+        r2=each[each.find("href")+7:]
+        a.append(spy.main_url+r2)
+    return a
+
 @noerror
 def func_2_next(html,url):
-	#在这里返回url_2的下一页
-	html=etree.HTML(html)
-	try:
-		a=html.xpath('//div [@class="pagination pagination-multi"]')[0][0][-1][0].attrib['href']
-		return url[:url.rfind('/')]+'/'+a
-	except Exception as e:
-		insert(str(e))
-		return 0
-	
+    #在这里返回url_2的下一页
+    i=re.findall(r"next-page.*?下一页",html)
+    if i==[]:
+        return 0
+    i=i[0]
+    if url.find("_")!=-1:
+        #print("有_")
+        r=i[i.find("href")+6:-5]
+        next=url[:url.find("_")-4]+r
+        return next        
+    r=i[i.find("_")-4:-5]
+    next=url[:url.find("html")-5]+r
+    return next
+    
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 
 #######常量#######
 spy.out_file='out.txt'#输出文件
 spy.log_file='url1.log'#日志文件
-spy.thread_num=3#线程数
+spy.thread_num=10#线程数
 spy.main_url='https://qqc962.com/'#首页
 url='https://qqc962.com/page/1.html'#从第几页开始爬
 #################
 
 if __name__ == '__main__':
-	spy.func_2_search,spy.func_2_next,spy.func_1_search,spy.func_1_next=func_2_search,func_2_next,func_1_search,func_1_next
-	spy.main(url,1)#main(从第几页开始，爬几页)
+    spy.func_2_search,spy.func_2_next,spy.func_1_search,spy.func_1_next=func_2_search,func_2_next,func_1_search,func_1_next
+    spy.main(url,40)#main(从第几页开始，爬几页)
 
 
 
