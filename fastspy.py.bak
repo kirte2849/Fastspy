@@ -202,7 +202,7 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
     insert('                第二阶段')
     multi_thread(t_func,args=url_2,num=thread_num)
     insert('正在保存…\033[1;32m')
-    func_save(src,out_file)
+    func_save(src)
     quit()
         
 
