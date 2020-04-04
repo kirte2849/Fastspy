@@ -32,14 +32,15 @@ log_file='url.log'
 l=Lock()
 src=[]
 header=None
+timeout=5
 
 def noerror(func):
     def zsq(*args,**kwargs):
         try:
             return func(*args,**kwargs)
         except Exception as e:
-            print('\033[37;41m\n\n\n\n\n\n一个错误出现在函数'+func.__name__+'\n错误类型:['+str(e)+']')
-            print('我们正在尽全力进行挽回...\n\n\n\n\n\033[0m')
+            print(f'\033[37;41m{"-"*40}\n\n\n\n\n\n一个错误出现在函数'+func.__name__+'\n错误类型:['+str(e)+']')
+            print(f'我们正在尽全力进行挽回...\n\n\n\n\n{"-"*40}\n\033[0m')
             return None
     return zsq
 
@@ -71,13 +72,15 @@ def pipe(host='127.0.0.1',db='0',pw=''):
     return proxy
 
 def spyder(url,pro='off',down='off',meta=False):
+    times=0
     while True:
         try:
             if pro == 'off' :
                 if header:
-                    resp=requests.get(url=url,timeout=10, verify=False,headers=header)
+                    insert('使用header')
+                    resp=requests.get(url=url,timeout=timeout, verify=False,headers=header)
                 else:
-                    resp=requests.get(url=url,timeout=10, verify=False)
+                    resp=requests.get(url=url,timeout=timeout, verify=False)
             elif pro == 'on' :
                 proxy=pipe()
                 if header:
@@ -86,18 +89,29 @@ def spyder(url,pro='off',down='off',meta=False):
                     resp=requests.get(url=url,proxies=proxy,timeout=5, verify=False)
                 print('使用代理成功' + str(proxy))
             if resp.status_code != 200 :
-                print('[错误的返还码:' + resp.status_code + '!]')
-                continue
+                insert(f'\033[1;31m[{url}:\033[1;33m错误代码:{resp.status_code}\033[1;31m]\033[0m' )
+                if times>=3:
+                    insert(f'\033[37;41m{"-"*40}\n错误次数过多，放弃重试......\n{"-"*40}\n\033[0m')
+                    break
+                else:
+                    times+=1
+                    continue
             if len(resp.text) < 2 :
                 print('[返还数据为空!]')
                 continue
-        except:
-            insert('[请求超时!]' )
+        except Exception as e:
+            insert(f'\033[1;33m{type(e)}:\033[1;31m{str(e)}\033[0m')
+            times+=1
             sleep(0.5)
+            if times>=3:
+                insert(f'\033[37;41m{"-"*40}\n错误次数过多，放弃重试......\n{"-"*40}\033[0m')
+                break
+            else:
+                sleep(0.5)
         else:
             source_encoding = resp.apparent_encoding or resp.encoding
             if down == 'off' :
-                insert('\033[1;36m[gethtml:'+url+']\033[0m')
+                insert('\033[1;36m[gethtml:'+str(url)+']\033[0m')
                 return resp.content.decode(source_encoding, errors="ignore")
             elif down == 'on' :
                 return resp.content
@@ -153,7 +167,7 @@ def t_func(id,url_list):
             html=spyder(next_page)
             src_temp.append(func_2_search(html,next_page))
             next_page=func_2_next(html,next_page)
-        insert('完成爬行:'+each)
+        insert('url_2完成爬行:'+str(each))
         l.acquire()
         proc_now=proc_now+1
         l.release()
@@ -176,16 +190,16 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
     i=0
     url_now=url_start
     html=''
-    print('\033[1;32m主页:'+main_url)
+    print('\033[1;32m主页:'+str(main_url))
     print('开始url:'+url_start)
     print('线程数:'+str(thread_num))
     print('url_2输出文件:'+log_file)
     print('输出结果文件:'+out_file)
-    insert('                第一阶段\033[0m')
+    insert('\033[1;31m------------------第一阶段-----------------\033[0m')
     start()
     f=open(log_file,'a',encoding='utf-8')
     for i in range(num+1):
-        insert('正在寻找url:'+url_now)
+        insert('正在寻找url_1:'+str(url_now))
         html=spyder(url_now)
         a=func_1_search(html,url_now)
         for each in a:
@@ -194,12 +208,13 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
         url_1.append(url_now)
         url_now=func_1_next(None,url_now)
         if url_now==False:
+            insert('\033[1;32murl_1没有下一页了')
             break
     f.close()
-    insert('\033[1;32m爬至'+url_now)
+    insert('\033[1;32m爬至'+str(url_now))
     insert('共'+str(len(url_2))+'部')
     proc_all=len(url_2)
-    insert('                第二阶段')
+    insert('\033[1;31m------------------第2阶段-----------------\033[1;32m')
     multi_thread(t_func,args=url_2,num=thread_num)
     insert('正在保存…\033[1;32m')
     func_save(src,out_file)

@@ -22,13 +22,13 @@ def func_2_search(html,url):
     try:
         payload=r'''<p><img src="https:.+?"'''
         result=re.findall(payload,html)
-        title=re.search(r"<title>.*</title>",html).group(0)
+        title=re.search(r"<title>.*</title>",html).group(0)[7:-8]
         r=[]
         for each in result:
             r.append(each.replace(r'"',"")[12:])
-        return {'title':title,'img_src':r}
+        return {'title':title,'img_src':r}#这些返回的数据会被fastspy加到一个叫src的变量中，src的结构[{'title':title,'img_src':r},{'title':title,'img_src':r}......省略]
     except Exception as e:
-        insert('\033[37;41m'+str(e)+'\033[0m')
+        insert('\033[37;41mError at [func_2_srarch]:'+str(e)+'\033[0m')
         return {'title':'null','img_src':'null'}
         
 @noerror
@@ -86,7 +86,7 @@ spy.header=None
 if __name__ == '__main__':
     spy.func_2_search,spy.func_2_next,spy.func_1_search,spy.func_1_next=func_2_search,func_2_next,func_1_search,func_1_next
     spy.func_save=func_save
-    spy.main(url,40)#main(从第几页开始，爬几页)
+    spy.main(url,1)#main(从第几页开始，爬几页)
 
 
 
