@@ -81,6 +81,11 @@ spy.thread_num=10#线程数
 spy.main_url='https://qqc962.com/'#首页
 url='https://qqc962.com/page/1.html'#从第几页开始爬
 spy.header=None
+spy.pr_use='on'
+spy.db_port=6379
+spy.db_ip='127.0.0.1'
+spy.db_pw=''
+spy.db_db='0'
 #################
 
 if __name__ == '__main__':

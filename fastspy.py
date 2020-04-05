@@ -33,6 +33,15 @@ l=Lock()
 src=[]
 header=None
 timeout=5
+pr_use='off'
+db_port=6379
+db_ip='127.0.0.1'
+db_pw=''
+db_db='0'
+
+
+
+
 
 def noerror(func):
     def zsq(*args,**kwargs):
@@ -68,8 +77,10 @@ def start():
 def pipe(host='127.0.0.1',db='0',pw=''):
     r=redis.Redis(host=host,port='6379',db=db,password=pw,decode_responses=True)
     pro=random.choice(r.keys())
-    proxy={'http' : pro}
+    proxy={'http' : pro
+           ,'https':pro}
     return proxy
+
 
 def spyder(url,pro='off',down='off',meta=False):
     times=0
@@ -164,7 +175,7 @@ def t_func(id,url_list):
     for each in url_list:
         next_page=each
         while next_page:
-            html=spyder(next_page)
+            html=spyder(next_page,pr_use)
             src_temp.append(func_2_search(html,next_page))
             next_page=func_2_next(html,next_page)
         insert('url_2完成爬行:'+str(each))
@@ -200,7 +211,7 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
     f=open(log_file,'a',encoding='utf-8')
     for i in range(num+1):
         insert('正在寻找url_1:'+str(url_now))
-        html=spyder(url_now)
+        html=spyder(url_now,pr_use)
         a=func_1_search(html,url_now)
         for each in a:
             f.write(each+'\n')

@@ -3,6 +3,7 @@ import requests
 
 class Apis():
     def __init__(self):
+        self.timeout=5
         self.api_names=['api_check_1'
                     ,'api_check_2'
                     
@@ -18,7 +19,7 @@ class Apis():
           'https': 'http://'+pr,
         }
         try:
-            resp=requests.get('https://api.ipify.org/',timeout=6, proxies=proxies)
+            resp=requests.get('https://api.ipify.org/',timeout=self.timeout, proxies=proxies)
             if resp.content.decode()==pr.split(':')[0]:
                 return True
             else:
@@ -34,7 +35,7 @@ class Apis():
           'https': 'http://'+pr,
         }
         try:
-            resp=requests.get('http://icanhazip.com/',timeout=6, proxies=proxies)
+            resp=requests.get('http://icanhazip.com/',timeout=self.timeout, proxies=proxies)
             if resp.content.decode()==pr.split(':')[0]:
                 return True
             else:
