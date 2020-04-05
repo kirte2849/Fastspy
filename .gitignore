@@ -1,5 +1,5 @@
-*.txt
-*.log
-__pycache__
-*.swp
-*.bak
+/*.txt
+/*.log
+/__pycache__
+/*.swp
+/*.bak

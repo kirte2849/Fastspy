@@ -88,7 +88,7 @@ print(f'有效输入数据:{str(aftlen)}条')
 print(f'本次录入:{str(num)}条')
 print(f'用时{end_time-start_time}秒')
 if send_to_qq:
-    hook.send(f'[检测完毕]\\n[本次录入:{str(num)}条]\\n用时{str(int(end_time-start_time))}秒')
+    hook.send(f'[检测完毕]\\n[本次录入:{str(num)}条]\\n[用时:{str(int(end_time-start_time))}秒]')
     
 
 
