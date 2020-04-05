@@ -63,7 +63,7 @@ def main(id,prs):
                 num+=1
                 l.release()
 prs=[]
-f=open('prs.txt','r')
+f=open('/src/prs.txt','r')
 for each in f:
     prs.append(each.strip('\n',).strip())
 f.close()

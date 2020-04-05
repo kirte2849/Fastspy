@@ -60,12 +60,12 @@ def main(id,prs):
     l.release()
     
 prs=[]
-f=open('prs.txt','r')
+f=open('src/prs.txt','r')
 for each in f:
     prs.append(each.strip('\n',).strip())
 f.close()
 multi_thread(main,prs,t_num)
-f=open('result.txt','w')
+f=open('result/result.txt','w')
 for each in results:
     f.write(each)
 f.close()

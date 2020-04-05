@@ -75,8 +75,8 @@ def func_save(src,out_file):
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 
 #######常量#######
-spy.out_file='out.txt'#输出文件
-spy.log_file='url1.log'#日志文件
+spy.out_file='result/out.txt'#输出文件
+spy.log_file='result/url1.log'#日志文件
 spy.thread_num=10#线程数
 spy.main_url='https://qqc962.com/'#首页
 url='https://qqc962.com/page/1.html'#从第几页开始爬
