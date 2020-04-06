@@ -1,3 +1,5 @@
+#使用前改名为settings.py
+#main
 class Main_settings():
     '''储存main的所有设置'''
 
@@ -33,3 +35,10 @@ class Qq_hook_settings():
         
         self.api_2='https://app.qun.qq.com/cgi-bin/api/hookrobot_send?key=363139ea2161aff4都不时间你是不是快de6d'#请修改
 ##
+##ip_db
+class Ip_db_settings():
+    def __init__(self):
+        self.send_to_qq=True
+        self.t_num=100
+        self.api_timeout=6
+        self.tel_timeout=6

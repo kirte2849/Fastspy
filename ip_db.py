@@ -6,12 +6,16 @@ from random import choice
 import redis
 import time
 from qq_hook import Hook
+from settings import Ip_db_settings
 
-send_to_qq=True
-t_num=100
+c=Ip_db_settings()
 apis=Apis()
-tel_timeout=6
-apis.timeout=10
+#读setting
+send_to_qq=c.send_to_qq
+t_num=c.t_num
+tel_timeout=c.tel_timeout
+apis.timeout=c.api_timeout
+#
 pool=redis.ConnectionPool(host='127.0.0.1',port=6379,max_connections=200)
 num=0
 l=Lock()
@@ -44,7 +48,7 @@ def multi_thread(func,args,num):
 def telnet_check(ip,port):
     try:
         #print(ip,port)
-        telnetlib.Telnet(ip, port=port, timeout=1.5)
+        telnetlib.Telnet(ip, port=port, timeout=tel_timeout)
         return True
     except Exception as e:
         #print(str(e))
@@ -66,30 +70,40 @@ def main(id,prs):
                 num+=1
                 l.release()
                 
-hook=Hook(2)
-prs=[]
-f=open('src/prs.txt','r')
-for each in f:
-    prs.append(each.strip('\n',).strip())
-f.close()
-prelen=len(prs)
-prs=list(set(prs))
-aftlen=len(prs)
-start_time=time.time()
-if send_to_qq:
-    hook.send(f'[开始检测]\\n[输入数据:{str(prelen)}条]\\n[重复数据:{str(prelen-aftlen)}条]\\n[有效输入数据:{str(aftlen)}条]\\n[线程数:{str(t_num)}]\\nPlease wait.......')
-    hook.send(f'[telnet检测超时时间:{tel_timeout}]\\n[api检测超时时间:{apis.timeout}]')
-multi_thread(main,prs,t_num)
-end_time=time.time()
-print('\033[1;36m完毕')
-print(f'\033[1;36m输入数据:{str(prelen)}条')
-print(f'重复数据:{str(prelen-aftlen)}条')
-print(f'有效输入数据:{str(aftlen)}条')
-print(f'本次录入:{str(num)}条')
-print(f'用时{end_time-start_time}秒')
-if send_to_qq:
-    hook.send(f'[检测完毕]\\n[本次录入:{str(num)}条]\\n[用时:{str(int(end_time-start_time))}秒]')
-    
+def check_one(prs):
+    if telnet_check(each.split(':')[0],each.split(':')[1]):
+        if getattr(apis,choice(apis.api_names))(each):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+if __name__ == '__main__':
+    hook=Hook(2)
+    prs=[]
+    f=open('src/prs.txt','r')
+    for each in f:
+        prs.append(each.strip('\n',).strip())
+    f.close()
+    prelen=len(prs)
+    prs=list(set(prs))
+    aftlen=len(prs)
+    start_time=time.time()
+    if send_to_qq:
+        hook.send(f'[开始检测]\\n[输入数据:{str(prelen)}条]\\n[重复数据:{str(prelen-aftlen)}条]\\n[有效输入数据:{str(aftlen)}条]\\n[线程数:{str(t_num)}]\\nPlease wait.......')
+        hook.send(f'[telnet检测超时时间:{tel_timeout}]\\n[api检测超时时间:{apis.timeout}]')
+    multi_thread(main,prs,t_num)
+    end_time=time.time()
+    print('\033[1;36m完毕')
+    print(f'\033[1;36m输入数据:{str(prelen)}条')
+    print(f'重复数据:{str(prelen-aftlen)}条')
+    print(f'有效输入数据:{str(aftlen)}条')
+    print(f'本次录入:{str(num)}条')
+    print(f'用时{end_time-start_time}秒')
+    if send_to_qq:
+        hook.send(f'[检测完毕]\\n[本次录入:{str(num)}条]\\n[用时:{str(int(end_time-start_time))}秒]')
+        
 
 
 
