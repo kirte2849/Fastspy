@@ -12,7 +12,6 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 _author=kirte
 _date=2020.3.16
 '''
-
 proc_now=0
 proc_all=20
 process_num=20
@@ -38,9 +37,6 @@ db_port=6379
 db_ip='127.0.0.1'
 db_pw=''
 db_db='0'
-
-
-
 
 
 def noerror(func):
