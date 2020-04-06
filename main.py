@@ -2,6 +2,7 @@ from fastspy import spyder,insert,noerror
 import fastspy as spy
 from lxml import etree
 import re
+from settings import Main_settings
 '''
 _author=kirte
 _date=2020.3.16
@@ -75,17 +76,18 @@ def func_save(src,out_file):
 #@@@@@@@@@@@@@@@@@@@@@@@@#
 
 #######常量#######
-spy.out_file='result/out.txt'#输出文件
-spy.log_file='result/url1.log'#日志文件
-spy.thread_num=10#线程数
-spy.main_url='https://qqc962.com/'#首页
-url='https://qqc962.com/page/1.html'#从第几页开始爬
-spy.header=None
-spy.pr_use='on'
-spy.db_port=6379
-spy.db_ip='127.0.0.1'
-spy.db_pw=''
-spy.db_db='0'
+settings = Main_settings()
+spy.out_file = settings.out
+spy.log_file = settings.log
+spy.thread_num = settings.thread_num
+spy.main_url = settings.main_url
+url = settings.url
+spy.header = settings.header
+spy.pr_use = settings.pr_use
+spy.db_port = settings.db_port
+spy.db_ip = settings.db_ip
+spy.db_pw = settings.db_pw
+spy.db_db = settings.db_db
 #################
 
 if __name__ == '__main__':

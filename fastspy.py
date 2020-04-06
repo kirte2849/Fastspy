@@ -204,7 +204,7 @@ def main (url_start='http://bbs.tjdige.com/list.asp?p=1&classid=6',num=0):
     print('输出结果文件:'+out_file)
     insert('\033[1;31m------------------第一阶段-----------------\033[0m')
     start()
-    f=open(log_file,'a',encoding='utf-8')
+    f=open(log_file,'w',encoding='utf-8')
     for i in range(num+1):
         insert('正在寻找url_1:'+str(url_now))
         html=spyder(url_now,pr_use)

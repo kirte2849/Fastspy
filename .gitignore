@@ -3,4 +3,4 @@
 /__pycache__
 /*.swp
 /*.bak
-const.py
+settings.py
