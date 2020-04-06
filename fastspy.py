@@ -97,7 +97,7 @@ def spyder(url,pro='off',down='off',meta=False):
                 print('使用代理成功' + str(proxy))
             if resp.status_code != 200 :
                 insert(f'\033[1;31m[{url}:\033[1;33m错误代码:{resp.status_code}\033[1;31m]\033[0m' )
-                if times>=3:
+                if times>=5:
                     insert(f'\033[37;41m{"-"*40}\n错误次数过多，放弃重试......\n{"-"*40}\n\033[0m')
                     break
                 else:
@@ -110,7 +110,7 @@ def spyder(url,pro='off',down='off',meta=False):
             insert(f'\033[1;33m{type(e)}:\033[1;31m{str(e)}\033[0m')
             times+=1
             sleep(0.5)
-            if times>=3:
+            if times>=5:
                 insert(f'\033[37;41m{"-"*40}\n错误次数过多，放弃重试......\n{"-"*40}\033[0m')
                 break
             else:
